@@ -1,0 +1,9 @@
+﻿  d3dApp.cpp
+  d3dUtil.cpp
+  GameTimer.cpp
+  GeometryGenerator.cpp
+  MathHelper.cpp
+  FrameResource.cpp
+  ShapesApp.cpp
+  Generating Code...
+  Shapes.vcxproj -> C:\Users\mehol\Downloads\Lab #4\Lab #4 project\Shapes\x64\Debug\Shapes.exe
