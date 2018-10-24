@@ -1,9 +1,6 @@
-﻿  d3dApp.cpp
-  d3dUtil.cpp
-  GameTimer.cpp
-  GeometryGenerator.cpp
-  MathHelper.cpp
-  FrameResource.cpp
+﻿  GeometryGenerator.cpp
+c:\users\mehol\documents\github\castle\castle alpha\common\geometrygenerator.cpp(675): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\mehol\documents\github\castle\castle alpha\common\geometrygenerator.cpp(684): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   ShapesApp.cpp
   Generating Code...
-  Shapes.vcxproj -> C:\Users\mehol\Downloads\Lab #4\Lab #4 project\Shapes\x64\Debug\Shapes.exe
+  Shapes.vcxproj -> C:\Users\mehol\Documents\GitHub\Castle\Castle Alpha\Castle Alpha project\Shapes\x64\Debug\Shapes.exe

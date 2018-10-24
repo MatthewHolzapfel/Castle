@@ -656,6 +656,81 @@ GeometryGenerator::MeshData GeometryGenerator::CreateQuad(float x, float y, floa
     return meshData;
 }
 
+GeometryGenerator::MeshData GeometryGenerator::CreateHexagon(float width, float height, float depth, uint32 numSubdivisions)
+{
+	MeshData meshData;
+
+	//
+	// Create the vertices.
+	//
+
+	Vertex v[24];
+
+	float w2 = 0.5f*width;
+	float h2 = 0.5f*height;
+	float d2 = 0.5f*depth;
+
+	// Fill in the top face vertex data.
+	v[0] = Vertex(0.0f* w2, 0.0f * h2, 0.0f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[1] = Vertex(-0.5f * w2, 0.0f * h2, -0.5 * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[2] = Vertex(-0.75f* w2, 0.0f * h2, 0.0f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[3] = Vertex(-0.5f* w2, 0.0f * h2, 0.5f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	v[4] = Vertex(0.5f* w2, 0.0f * h2, 0.5f* d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	v[5] = Vertex(0.75f* w2, 0.0f* h2, 0.0f * d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[6] = Vertex(0.5f* w2, 0.0f * h2, -0.5f * d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+	//////BOTTOM FACE VERTEX DATA
+	v[7] = Vertex(0.0f* w2, -0.3f * h2, 0.0f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[8] = Vertex(-0.5f * w2, -0.3f * h2, -0.5 * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[9] = Vertex(-0.75f* w2, -0.3f * h2, 0.0f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[10] = Vertex(-0.5f* w2, -0.3f * h2, 0.5f * d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	v[11] = Vertex(0.5f* w2, -0.3f * h2, 0.5f* d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	v[12] = Vertex(0.75f* w2, -0.3f* h2, 0.0f * d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[13] = Vertex(0.5f* w2, -0.3f * h2, -0.5f * d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+
+
+
+
+	
+	meshData.Vertices.assign(&v[0], &v[24]);
+
+	//
+	// Create the indices.
+	//
+
+	uint32 i[36];
+
+	// Fill in the top face index data
+	i[0] = 0; i[1] = 1; i[2] = 2;
+	i[3] = 0; i[4] = 2; i[5] = 3;
+	i[6] = 0; i[7] = 3; i[8] = 4;
+	i[9] = 0; i[10] = 4; i[11] = 5;
+	i[12] = 0; i[13] = 5; i[14] = 6;
+	i[15] = 0; i[16] = 6; i[17] = 1;
+
+	/////bottom face indices
+	i[18] = 7; i[19] = 8; i[20] = 9;
+	i[21] = 7; i[22] = 9; i[23] = 10;
+	i[24] = 7; i[25] = 10; i[26] = 11;
+	i[27] = 7; i[28] = 11; i[29] = 12;
+	i[30] = 7; i[31] = 12; i[32] = 13;
+	i[33] = 7; i[34] = 13; i[35] = 8;
+
+
+	
+
+	meshData.Indices32.assign(&i[0], &i[36]);
+
+	// Put a cap on the number of subdivisions.
+	numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
+
+	for (uint32 i = 0; i < numSubdivisions; ++i)
+		Subdivide(meshData);
+
+	return meshData;
+}
+
 GeometryGenerator::MeshData GeometryGenerator::CreateCone(float bottomRadius, float height, uint32 sliceCount, uint32 stackCount)
 {
 	MeshData meshData;

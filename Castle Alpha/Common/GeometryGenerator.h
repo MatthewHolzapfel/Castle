@@ -11,7 +11,6 @@
 //   2. Invert the normal.
 //   3. Update the texture coordinates and tangent vectors.
 //***************************************************************************************
-
 #pragma once
 
 #include <cstdint>
@@ -116,6 +115,9 @@ public:
 	/// Creates a quad aligned with the screen.  This is useful for postprocessing and screen effects.
 	///</summary>
     MeshData CreateQuad(float x, float y, float w, float h, float depth);
+
+
+	MeshData CreateHexagon(float width, float height, float depth, uint32 numSubdivisions);
 
 private:
 	void Subdivide(MeshData& meshData);

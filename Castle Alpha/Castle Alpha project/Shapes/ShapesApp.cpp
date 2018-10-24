@@ -531,7 +531,8 @@ void ShapesApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData grid = geoGen.CreateGrid(20.0f, 30.0f, 60, 40);
 	GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
-
+	//GeometryGenerator::MeshData cone = geoGen.CreateCone(0.5f, 3.0f, 20, 20);
+	GeometryGenerator::MeshData hexagon = geoGen.CreateHexagon(5.0f, 5.0f, 5.0f, 3);
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
 	// define the regions in the buffer each submesh covers.
@@ -542,13 +543,13 @@ void ShapesApp::BuildShapeGeometry()
 	UINT gridVertexOffset = (UINT)box.Vertices.size();
 	UINT sphereVertexOffset = gridVertexOffset + (UINT)grid.Vertices.size();
 	UINT cylinderVertexOffset = sphereVertexOffset + (UINT)sphere.Vertices.size();
-
+	UINT hexagonVertexOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
 	UINT gridIndexOffset = (UINT)box.Indices32.size();
 	UINT sphereIndexOffset = gridIndexOffset + (UINT)grid.Indices32.size();
 	UINT cylinderIndexOffset = sphereIndexOffset + (UINT)sphere.Indices32.size();
-
+	UINT hexagonIndexOffset = cylinderIndexOffset + (UINT)cylinder.Indices32.size();
     // Define the SubmeshGeometry that cover different 
     // regions of the vertex/index buffers.
 
@@ -572,6 +573,11 @@ void ShapesApp::BuildShapeGeometry()
 	cylinderSubmesh.StartIndexLocation = cylinderIndexOffset;
 	cylinderSubmesh.BaseVertexLocation = cylinderVertexOffset;
 
+	SubmeshGeometry hexagonSubmesh;
+	hexagonSubmesh.IndexCount = (UINT)hexagon.Indices32.size();
+	hexagonSubmesh.StartIndexLocation = hexagonIndexOffset;
+	hexagonSubmesh.BaseVertexLocation = hexagonVertexOffset;
+
 	//
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
@@ -581,7 +587,8 @@ void ShapesApp::BuildShapeGeometry()
 		box.Vertices.size() +
 		grid.Vertices.size() +
 		sphere.Vertices.size() +
-		cylinder.Vertices.size();
+		cylinder.Vertices.size() +
+		hexagon.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -610,11 +617,19 @@ void ShapesApp::BuildShapeGeometry()
 		vertices[k].Color = XMFLOAT4(DirectX::Colors::SteelBlue);
 	}
 
+	for (size_t i = 0; i < hexagon.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = hexagon.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::Black);
+	}
+
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
 	indices.insert(indices.end(), std::begin(grid.GetIndices16()), std::end(grid.GetIndices16()));
 	indices.insert(indices.end(), std::begin(sphere.GetIndices16()), std::end(sphere.GetIndices16()));
 	indices.insert(indices.end(), std::begin(cylinder.GetIndices16()), std::end(cylinder.GetIndices16()));
+	indices.insert(indices.end(), std::begin(hexagon.GetIndices16()), std::end(hexagon.GetIndices16()));
+
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
     const UINT ibByteSize = (UINT)indices.size()  * sizeof(std::uint16_t);
@@ -643,6 +658,7 @@ void ShapesApp::BuildShapeGeometry()
 	geo->DrawArgs["grid"] = gridSubmesh;
 	geo->DrawArgs["sphere"] = sphereSubmesh;
 	geo->DrawArgs["cylinder"] = cylinderSubmesh;
+	geo->DrawArgs["hexagon"] = hexagonSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -720,8 +736,18 @@ void ShapesApp::BuildRenderItems()
     gridRitem->BaseVertexLocation = gridRitem->Geo->DrawArgs["grid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(gridRitem));
 
-	UINT objCBIndex = 2;
-	for(int i = 0; i < 5; ++i)
+	auto hexRitem = std::make_unique<RenderItem>();
+	hexRitem->World = MathHelper::Identity4x4();
+	hexRitem->ObjCBIndex = 2;
+	hexRitem->Geo = mGeometries["shapeGeo"].get();
+	hexRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	hexRitem->IndexCount = hexRitem->Geo->DrawArgs["hexagon"].IndexCount;
+	hexRitem->StartIndexLocation = hexRitem->Geo->DrawArgs["hexagon"].StartIndexLocation;
+	hexRitem->BaseVertexLocation = hexRitem->Geo->DrawArgs["hexagon"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(hexRitem));
+	
+	UINT objCBIndex = 3;
+	for(int i = 0; i < 4; ++i)
 	{
 		auto leftCylRitem = std::make_unique<RenderItem>();
 		auto rightCylRitem = std::make_unique<RenderItem>();
@@ -771,6 +797,7 @@ void ShapesApp::BuildRenderItems()
 		mAllRitems.push_back(std::move(leftSphereRitem));
 		mAllRitems.push_back(std::move(rightSphereRitem));
 	}
+
 
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
