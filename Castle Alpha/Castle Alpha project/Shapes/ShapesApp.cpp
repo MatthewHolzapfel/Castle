@@ -533,6 +533,7 @@ void ShapesApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
 	//GeometryGenerator::MeshData cone = geoGen.CreateCone(0.5f, 3.0f, 20, 20);
 	GeometryGenerator::MeshData hexagon = geoGen.CreateHexagon(5.0f, 5.0f, 5.0f, 3);
+	GeometryGenerator::MeshData diamond = geoGen.CreateDiamond(5.0f, 5.0f, 5.0f, 20);
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
 	// define the regions in the buffer each submesh covers.
@@ -544,12 +545,14 @@ void ShapesApp::BuildShapeGeometry()
 	UINT sphereVertexOffset = gridVertexOffset + (UINT)grid.Vertices.size();
 	UINT cylinderVertexOffset = sphereVertexOffset + (UINT)sphere.Vertices.size();
 	UINT hexagonVertexOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
+	UINT diamondVertexOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
 	UINT gridIndexOffset = (UINT)box.Indices32.size();
 	UINT sphereIndexOffset = gridIndexOffset + (UINT)grid.Indices32.size();
 	UINT cylinderIndexOffset = sphereIndexOffset + (UINT)sphere.Indices32.size();
 	UINT hexagonIndexOffset = cylinderIndexOffset + (UINT)cylinder.Indices32.size();
+	UINT diamondIndexOffset = cylinderIndexOffset + (UINT)cylinder.Indices32.size(); 
     // Define the SubmeshGeometry that cover different 
     // regions of the vertex/index buffers.
 
@@ -577,6 +580,11 @@ void ShapesApp::BuildShapeGeometry()
 	hexagonSubmesh.IndexCount = (UINT)hexagon.Indices32.size();
 	hexagonSubmesh.StartIndexLocation = hexagonIndexOffset;
 	hexagonSubmesh.BaseVertexLocation = hexagonVertexOffset;
+	
+	SubmeshGeometry diamondSubmesh;
+	diamondSubmesh.IndexCount = (UINT)diamond.Indices32.size();
+	diamondSubmesh.StartIndexLocation = diamondIndexOffset;
+	diamondSubmesh.BaseVertexLocation = diamondVertexOffset; 
 
 	//
 	// Extract the vertex elements we are interested in and pack the
@@ -588,7 +596,8 @@ void ShapesApp::BuildShapeGeometry()
 		grid.Vertices.size() +
 		sphere.Vertices.size() +
 		cylinder.Vertices.size() +
-		hexagon.Vertices.size();
+		hexagon.Vertices.size() +
+		diamond.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -622,6 +631,12 @@ void ShapesApp::BuildShapeGeometry()
 		vertices[k].Pos = hexagon.Vertices[i].Position;
 		vertices[k].Color = XMFLOAT4(DirectX::Colors::Black);
 	}
+	
+	for (size_t i = 0; i < diamond.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = diamond.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::Purple);
+	}
 
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
@@ -629,6 +644,7 @@ void ShapesApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(sphere.GetIndices16()), std::end(sphere.GetIndices16()));
 	indices.insert(indices.end(), std::begin(cylinder.GetIndices16()), std::end(cylinder.GetIndices16()));
 	indices.insert(indices.end(), std::begin(hexagon.GetIndices16()), std::end(hexagon.GetIndices16()));
+	indices.insert(indices.end(), std::begin(diamond.GetIndices16()), std::end(diamond.GetIndices16()));
 
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
@@ -659,6 +675,7 @@ void ShapesApp::BuildShapeGeometry()
 	geo->DrawArgs["sphere"] = sphereSubmesh;
 	geo->DrawArgs["cylinder"] = cylinderSubmesh;
 	geo->DrawArgs["hexagon"] = hexagonSubmesh;
+	geo->DrawArgs["diamond"] = diamondSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -746,7 +763,17 @@ void ShapesApp::BuildRenderItems()
 	hexRitem->BaseVertexLocation = hexRitem->Geo->DrawArgs["hexagon"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(hexRitem));
 	
-	UINT objCBIndex = 3;
+	auto diamondRitem = std::make_unique<RenderItem>();
+	diamondRitem->World = MathHelper::Identity4x4();
+	diamondRitem->ObjCBIndex = 3;
+	diamondRitem->Geo = mGeometries["shapeGeo"].get();
+	diamondRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	diamondRitem->IndexCount = diamondRitem->Geo->DrawArgs["diamond"].IndexCount;
+	diamondRitem->StartIndexLocation = diamondRitem->Geo->DrawArgs["diamond"].StartIndexLocation;
+	diamondRitem->BaseVertexLocation = diamondRitem->Geo->DrawArgs["diamond"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(diamondRitem));
+	
+	UINT objCBIndex = 4;
 	for(int i = 0; i < 4; ++i)
 	{
 		auto leftCylRitem = std::make_unique<RenderItem>();
