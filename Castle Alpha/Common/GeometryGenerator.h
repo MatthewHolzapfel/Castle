@@ -118,6 +118,8 @@ public:
 
 
 	MeshData CreateHexagon(float width, float height, float depth, uint32 numSubdivisions);
+	
+	MeshData CreateDiamond(float width, float height, float depth, uint32 numSubdivisions);
 
 private:
 	void Subdivide(MeshData& meshData);
