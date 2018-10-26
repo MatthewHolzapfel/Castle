@@ -116,10 +116,15 @@ public:
 	///</summary>
     MeshData CreateQuad(float x, float y, float w, float h, float depth);
 
+	//diamond
+	MeshData CreateDiamond(float width, float height, float depth, uint32 numSubdivisions);
+	///
+
 
 	MeshData CreateHexagon(float width, float height, float depth, uint32 numSubdivisions);
-	
-	MeshData CreateDiamond(float width, float height, float depth, uint32 numSubdivisions);
+	MeshData CreateTetrahedron(float width, float height, float depth, uint32 numSubdivisions);
+	MeshData CreatePyramid(float width, float height, float depth, uint32 numSubdivisions);
+	MeshData CreateWedge(float width, float height, float depth, uint32 numSubdivisions);
 
 private:
 	void Subdivide(MeshData& meshData);
