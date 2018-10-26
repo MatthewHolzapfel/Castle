@@ -538,6 +538,11 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	GeometryGenerator::MeshData cone = geoGen.CreateCone(0.5f, 3.0f, 20, 20);
 	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.0f, 1.0f, 1.0f, 3);
 	GeometryGenerator::MeshData quad = geoGen.CreateQuad(0.0f, 0.0f, 1.0f, 1.0f, 3);
+	GeometryGenerator::MeshData boxtwo = box;
+	GeometryGenerator::MeshData boxthree = box;
+	GeometryGenerator::MeshData boxfour = box;
+	GeometryGenerator::MeshData boxfive = box;
+	GeometryGenerator::MeshData boxsix = box;
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -556,6 +561,11 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	UINT coneVertexOffset = diamondVertexOffset + (UINT)diamond.Vertices.size();
 	UINT wedgeVertexOffset = coneVertexOffset + (UINT)cone.Vertices.size();
 	UINT quadVertexOffset = wedgeVertexOffset + (UINT)wedge.Vertices.size();
+	UINT boxtwoVertexOffset = quadVertexOffset + (UINT)quad.Vertices.size();
+	UINT boxthreeVertexOffset = boxtwoVertexOffset + (UINT)boxtwo.Vertices.size();
+	UINT boxfourVertexOffset = boxthreeVertexOffset + (UINT)boxthree.Vertices.size();
+	UINT boxfiveVertexOffset = boxfourVertexOffset + (UINT)boxfour.Vertices.size();
+	UINT boxsixVertexOffset = boxfiveVertexOffset + (UINT)boxfive.Vertices.size();
 
 
 	// Cache the starting index for each object in the concatenated index buffer./////////////////////////////////
@@ -570,6 +580,11 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	UINT coneIndexOffset = diamondIndexOffset + (UINT)diamond.Indices32.size();
 	UINT wedgeIndexOffset = coneIndexOffset + (UINT)cone.Indices32.size();
 	UINT quadIndexOffset = wedgeIndexOffset + (UINT)wedge.Indices32.size();
+	UINT boxtwoIndexOffset = quadIndexOffset + (UINT)quad.Indices32.size();
+	UINT boxthreeIndexOffset = boxtwoIndexOffset + (UINT)boxtwo.Indices32.size();
+	UINT boxfourIndexOffset = boxthreeIndexOffset + (UINT)boxthree.Indices32.size();
+	UINT boxfiveIndexOffset = boxfourIndexOffset + (UINT)boxfour.Indices32.size();
+	UINT boxsixIndexOffset = boxfiveIndexOffset + (UINT)boxfive.Indices32.size();
     // Define the SubmeshGeometry that cover different 
     // regions of the vertex/index buffers.
 
@@ -629,6 +644,31 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	quadSubmesh.StartIndexLocation = quadIndexOffset;
 	quadSubmesh.BaseVertexLocation = quadVertexOffset;
 
+	SubmeshGeometry boxtwoSubmesh;
+	boxtwoSubmesh.IndexCount = (UINT)boxtwo.Indices32.size();
+	boxtwoSubmesh.StartIndexLocation = boxtwoIndexOffset;
+	boxtwoSubmesh.BaseVertexLocation = boxtwoVertexOffset;
+
+	SubmeshGeometry boxthreeSubmesh;
+	boxthreeSubmesh.IndexCount = (UINT)boxthree.Indices32.size();
+	boxthreeSubmesh.StartIndexLocation = boxthreeIndexOffset;
+	boxthreeSubmesh.BaseVertexLocation = boxthreeVertexOffset;
+
+	SubmeshGeometry boxfourSubmesh;
+	boxfourSubmesh.IndexCount = (UINT)boxfour.Indices32.size();
+	boxfourSubmesh.StartIndexLocation = boxfourIndexOffset;
+	boxfourSubmesh.BaseVertexLocation = boxfourVertexOffset;
+
+	SubmeshGeometry boxfiveSubmesh;
+	boxfiveSubmesh.IndexCount = (UINT)boxfive.Indices32.size();
+	boxfiveSubmesh.StartIndexLocation = boxfiveIndexOffset;
+	boxfiveSubmesh.BaseVertexLocation = boxfiveVertexOffset;
+
+	SubmeshGeometry boxsixSubmesh;
+	boxsixSubmesh.IndexCount = (UINT)boxsix.Indices32.size();
+	boxsixSubmesh.StartIndexLocation = boxsixIndexOffset;
+	boxsixSubmesh.BaseVertexLocation = boxsixVertexOffset;
+
 	//
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
@@ -645,7 +685,12 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 		diamond.Vertices.size() +
 		cone.Vertices.size() +
 		wedge.Vertices.size() +
-		quad.Vertices.size();
+		quad.Vertices.size() +
+		boxtwo.Vertices.size() +
+		boxthree.Vertices.size() +
+		boxfour.Vertices.size() +
+		boxfive.Vertices.size() +
+		boxsix.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -717,6 +762,36 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 		vertices[k].Color = XMFLOAT4(DirectX::Colors::Silver);
 	}
 
+	for (size_t i = 0; i < boxtwo.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = boxtwo.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+	}
+
+	for (size_t i = 0; i < boxthree.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = boxthree.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+	}
+
+	for (size_t i = 0; i < boxfour.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = boxfour.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+	}
+
+	for (size_t i = 0; i < boxfive.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = boxfive.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+	}
+
+	for (size_t i = 0; i < boxsix.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = boxsix.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+	}
+
 
 
 	/////////////////////////////////////////////////////////////////////insert indices
@@ -732,6 +807,11 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	indices.insert(indices.end(), std::begin(cone.GetIndices16()), std::end(cone.GetIndices16()));
 	indices.insert(indices.end(), std::begin(wedge.GetIndices16()), std::end(wedge.GetIndices16()));
 	indices.insert(indices.end(), std::begin(quad.GetIndices16()), std::end(quad.GetIndices16()));
+	indices.insert(indices.end(), std::begin(boxtwo.GetIndices16()), std::end(boxtwo.GetIndices16()));
+	indices.insert(indices.end(), std::begin(boxthree.GetIndices16()), std::end(boxthree.GetIndices16()));
+	indices.insert(indices.end(), std::begin(boxfour.GetIndices16()), std::end(boxfour.GetIndices16()));
+	indices.insert(indices.end(), std::begin(boxfive.GetIndices16()), std::end(boxfive.GetIndices16()));
+	indices.insert(indices.end(), std::begin(boxsix.GetIndices16()), std::end(boxsix.GetIndices16()));
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
     const UINT ibByteSize = (UINT)indices.size()  * sizeof(std::uint16_t);
@@ -768,6 +848,11 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	geo->DrawArgs["cone"] = coneSubmesh;
 	geo->DrawArgs["wedge"] = wedgeSubmesh;
 	geo->DrawArgs["quad"] = quadSubmesh;
+	geo->DrawArgs["boxtwo"] = boxtwoSubmesh;
+	geo->DrawArgs["boxthree"] = boxthreeSubmesh;
+	geo->DrawArgs["boxfour"] = boxfourSubmesh;
+	geo->DrawArgs["boxfive"] = boxfiveSubmesh;
+	geo->DrawArgs["boxsix"] = boxsixSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
 }
@@ -826,7 +911,7 @@ void ShapesApp::BuildFrameResources()
 void ShapesApp::BuildRenderItems()/////////////////////////////////////////////////////////////////render
 {
 	auto boxRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&boxRitem->World, XMMatrixScaling(2.0f, 2.0f, 2.0f)*XMMatrixRotationX(0.0f)*XMMatrixTranslation(0.0f, 0.5f, 0.0f));
+	XMStoreFloat4x4(&boxRitem->World, XMMatrixScaling(5.0f, 2.0f, 0.50f)*XMMatrixRotationY(-0.79f)*XMMatrixTranslation(-3.5f, 0.5f, 6.0f));
 	boxRitem->ObjCBIndex = 0;
 	boxRitem->Geo = mGeometries["shapeGeo"].get();
 	boxRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -904,8 +989,58 @@ void ShapesApp::BuildRenderItems()//////////////////////////////////////////////
 	coneRitem->StartIndexLocation = coneRitem->Geo->DrawArgs["cone"].StartIndexLocation;
 	coneRitem->BaseVertexLocation = coneRitem->Geo->DrawArgs["cone"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(coneRitem));
+
+	auto boxtwoRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxtwoRitem->World, XMMatrixScaling(0.5f, 2.0f, 5.0f)*XMMatrixRotationY(0.0f)*XMMatrixTranslation(-6.0f, 0.5f, -1.5f));
+	boxtwoRitem->ObjCBIndex = 8;
+	boxtwoRitem->Geo = mGeometries["shapeGeo"].get();
+	boxtwoRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxtwoRitem->IndexCount = boxtwoRitem->Geo->DrawArgs["boxtwo"].IndexCount;
+	boxtwoRitem->StartIndexLocation = boxtwoRitem->Geo->DrawArgs["boxtwo"].StartIndexLocation;
+	boxtwoRitem->BaseVertexLocation = boxtwoRitem->Geo->DrawArgs["boxtwo"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(boxtwoRitem));
+
+	auto boxthreeRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxthreeRitem->World, XMMatrixScaling(5.0f, 2.0f, 0.5f)*XMMatrixRotationY(0.79f)*XMMatrixTranslation(-3.5f, 0.5f, -9.0f));
+	boxthreeRitem->ObjCBIndex = 9;
+	boxthreeRitem->Geo = mGeometries["shapeGeo"].get();
+	boxthreeRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxthreeRitem->IndexCount = boxthreeRitem->Geo->DrawArgs["boxthree"].IndexCount;
+	boxthreeRitem->StartIndexLocation = boxthreeRitem->Geo->DrawArgs["boxthree"].StartIndexLocation;
+	boxthreeRitem->BaseVertexLocation = boxthreeRitem->Geo->DrawArgs["boxthree"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(boxthreeRitem));
+
+	auto boxfourRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxfourRitem->World, XMMatrixScaling(5.0f, 2.0f, 0.50f)*XMMatrixRotationY(-0.790f)*XMMatrixTranslation(3.5f, 0.5f, -9.0f));
+	boxfourRitem->ObjCBIndex = 10;
+	boxfourRitem->Geo = mGeometries["shapeGeo"].get();
+	boxfourRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxfourRitem->IndexCount = boxfourRitem->Geo->DrawArgs["boxfour"].IndexCount;
+	boxfourRitem->StartIndexLocation = boxfourRitem->Geo->DrawArgs["boxfour"].StartIndexLocation;
+	boxfourRitem->BaseVertexLocation = boxfourRitem->Geo->DrawArgs["boxfour"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(boxfourRitem));
+
+	auto boxfiveRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxfiveRitem->World, XMMatrixScaling(5.0f, 2.0f, 0.5f)*XMMatrixRotationY(1.570f)*XMMatrixTranslation(6.0f, 0.5f, -1.5f));
+	boxfiveRitem->ObjCBIndex = 11;
+	boxfiveRitem->Geo = mGeometries["shapeGeo"].get();
+	boxfiveRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxfiveRitem->IndexCount = boxfiveRitem->Geo->DrawArgs["boxfive"].IndexCount;
+	boxfiveRitem->StartIndexLocation = boxfiveRitem->Geo->DrawArgs["boxfive"].StartIndexLocation;
+	boxfiveRitem->BaseVertexLocation = boxfiveRitem->Geo->DrawArgs["boxfive"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(boxfiveRitem));
+
+	auto boxsixRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxsixRitem->World, XMMatrixScaling(5.0f, 2.0f, 0.50f)*XMMatrixRotationY(0.79f)*XMMatrixTranslation(3.5f, 0.5f, 6.0f));
+	boxsixRitem->ObjCBIndex = 12;
+	boxsixRitem->Geo = mGeometries["shapeGeo"].get();
+	boxsixRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxsixRitem->IndexCount = boxsixRitem->Geo->DrawArgs["boxsix"].IndexCount;
+	boxsixRitem->StartIndexLocation = boxsixRitem->Geo->DrawArgs["boxsix"].StartIndexLocation;
+	boxsixRitem->BaseVertexLocation = boxsixRitem->Geo->DrawArgs["boxsix"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(boxsixRitem));
 	
-	UINT objCBIndex = 8;
+	UINT objCBIndex = 13;
 	for(int i = 0; i < 4; ++i)
 	{
 		auto leftCylRitem = std::make_unique<RenderItem>();
