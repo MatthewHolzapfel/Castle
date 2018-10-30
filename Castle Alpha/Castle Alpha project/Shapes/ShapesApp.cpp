@@ -1,5 +1,5 @@
 //***************************************************************************************
-// ShapesApp.cpp by Frank Luna (C) 2015 All Rights Reserved.
+// ShapesApp.cpp by Macro Orders (C) 2015 All Rights Reserved.
 //
 // Hold down '1' key to view scene in wireframe mode.
 //***************************************************************************************
@@ -556,7 +556,7 @@ void ShapesApp::BuildShapeGeometry()////////////////////////////////////////////
 	GeometryGenerator::MeshData cone3 = cone;
 	GeometryGenerator::MeshData cone4 = cone;
 	GeometryGenerator::MeshData cone5 = cone;
-	GeometryGenerator::MeshData geosphere = geoGen.CreateGeosphere(0.5, 20);
+	GeometryGenerator::MeshData geosphere = geoGen.CreateGeosphere(0.5, 3);
 
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -1390,7 +1390,31 @@ void ShapesApp::BuildRenderItems()//////////////////////////////////////////////
 	mAllRitems.push_back(std::move(wedge4Ritem));
 	j++;
 
-/*	UINT objCBIndex = j;
+	auto geosphereRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&geosphereRitem->World, XMMatrixScaling(3.0f, 3.0f, 3.0f)*XMMatrixTranslation(-10.0f, 1.0f, 9.0f));
+	geosphereRitem->ObjCBIndex = j;
+	geosphereRitem->Geo = mGeometries["shapeGeo"].get();
+	geosphereRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	geosphereRitem->IndexCount = geosphereRitem->Geo->DrawArgs["geosphere"].IndexCount;
+	geosphereRitem->StartIndexLocation = geosphereRitem->Geo->DrawArgs["geosphere"].StartIndexLocation;
+	geosphereRitem->BaseVertexLocation = geosphereRitem->Geo->DrawArgs["geosphere"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(geosphereRitem));
+	j++;
+
+/*	
+
+	auto quadRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&quadRitem->World, XMMatrixScaling(1.0f, 0.0f, 1.0f)*XMMatrixTranslation(0.0f, 0.5f, -2.0f));
+	quadRitem->ObjCBIndex = j;
+	quadRitem->Geo = mGeometries["shapeGeo"].get();
+	quadRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	quadRitem->IndexCount = gridRitem->Geo->DrawArgs["quad"].IndexCount;
+	quadRitem->StartIndexLocation = gridRitem->Geo->DrawArgs["quad"].StartIndexLocation;
+	quadRitem->BaseVertexLocation = gridRitem->Geo->DrawArgs["quad"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(quadRitem));
+	j++;
+
+UINT objCBIndex = j;
 	for(int i = 0; i < 4; ++i)
 	{
 		auto leftCylRitem = std::make_unique<RenderItem>();
